@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Certificate of Authenticity &amp; Digital Rights</title>
+    <script>
+      // Apply the saved theme before first paint to avoid a flash. Dark is the default.
+      document.documentElement.dataset.theme = localStorage.getItem('drf.theme') === 'light' ? 'light' : 'dark';
+    </script>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header class="page-header">
+      <button type="button" id="theme-toggle" class="secondary theme-toggle"></button>
+      <div class="brand">
+        <img id="brand-logo" alt="Clawmark Prints logo" />
+        <div>
+          <span class="brand-name">Clawmark Prints</span>
+          <h1>Certificate of Authenticity &amp; Digital Rights</h1>
+        </div>
+      </div>
+      <p>
+        Fill this in to make a PDF certificate that goes with your artwork. Everything runs in your browser.
+        Your files and details are never uploaded.
+      </p>
+    </header>
+
+    <form id="rights-form" novalidate>
+      <fieldset>
+        <legend>Certificate</legend>
+        <div class="grid">
+          <label>
+            Certificate number
+            <span class="inline">
+              <input id="certificateId" readonly />
+              <button type="button" id="regenerate-id" class="secondary">New</button>
+            </span>
+          </label>
+          <label>
+            Issue date
+            <input id="issueDate" type="date" required />
+          </label>
+          <label>
+            Paper size
+            <select id="pageSize">
+              <option value="letter">US Letter</option>
+              <option value="a4">A4</option>
+            </select>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Artwork</legend>
+        <label class="file-drop">
+          <span>Artwork file <small>(used for the thumbnail and SHA-256 fingerprint; any file type)</small></span>
+          <input id="artworkFile" type="file" />
+        </label>
+        <div id="file-info" class="file-info" hidden>
+          <img id="file-preview" alt="Artwork preview" hidden />
+          <dl>
+            <dt>File</dt>
+            <dd id="file-name"></dd>
+            <dt>SHA-256</dt>
+            <dd id="file-hash" class="mono"></dd>
+          </dl>
+        </div>
+        <div class="grid">
+          <label class="span-2">
+            <span>Title <span class="req">*</span></span>
+            <input id="title" required placeholder="e.g. Neon Tide No. 3" />
+          </label>
+          <label>
+            Edition
+            <input id="edition" placeholder="e.g. 1 of 10, or Unique" />
+          </label>
+          <label>
+            Date created
+            <input id="dateCreated" type="date" />
+          </label>
+          <label>
+            Medium / format
+            <input id="medium" placeholder="e.g. Digital painting, PNG" />
+          </label>
+          <label>
+            Dimensions / resolution
+            <input id="dimensions" placeholder="e.g. 4000 × 5000 px" />
+          </label>
+          <label>
+            Creation method
+            <select id="creationMethod">
+              <option value="digital">Made by the artist (no generative AI)</option>
+              <option value="ai-assisted">AI-assisted</option>
+              <option value="ai-generated">AI-generated</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label>
+            Tools used
+            <input id="toolsUsed" placeholder="e.g. Procreate, Photoshop, Midjourney v7" />
+          </label>
+          <label class="span-full">
+            Description
+            <textarea id="description" rows="3" placeholder="Optional notes about the piece"></textarea>
+          </label>
+        </div>
+        <p id="ai-note" class="hint" hidden>
+          Heads up: in many places, including the US, art made purely by AI may not be protected by copyright. The
+          rights you can grant may be limited to the parts you made yourself.
+        </p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Artist</legend>
+        <div class="grid">
+          <label>
+            <span>Legal name <span class="req">*</span></span>
+            <input id="artistName" required autocomplete="name" />
+          </label>
+          <label>
+            Artist name / alias
+            <input id="artistAlias" />
+          </label>
+          <label>
+            Email
+            <input id="artistEmail" type="email" autocomplete="email" />
+          </label>
+          <label>
+            Website / portfolio
+            <input id="artistWebsite" type="url" placeholder="https://" />
+          </label>
+        </div>
+        <label class="checkbox">
+          <input id="rememberArtist" type="checkbox" checked />
+          Remember my artist details on this device
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Issued to</legend>
+        <p class="hint">Leave this blank to make the certificate out to whoever holds it.</p>
+        <div class="grid">
+          <label>
+            Name
+            <input id="recipientName" />
+          </label>
+          <label>
+            Organization
+            <input id="recipientOrg" />
+          </label>
+          <label>
+            Email
+            <input id="recipientEmail" type="email" />
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Rights granted</legend>
+        <div class="grid">
+          <label class="span-2">
+            License type
+            <select id="licenseType">
+              <option value="personal">Personal, non-commercial license</option>
+              <option value="commercial">Non-exclusive commercial license</option>
+              <option value="exclusive">Exclusive commercial license</option>
+              <option value="transfer">Full copyright assignment</option>
+            </select>
+          </label>
+        </div>
+        <p class="hint">Changing the license type resets the boxes below to sensible defaults. You can still change them.</p>
+        <div class="columns">
+          <div>
+            <h3>The holder may…</h3>
+            <div id="permissions" class="checklist"></div>
+          </div>
+          <div>
+            <h3>The holder may never…</h3>
+            <div id="prohibitions" class="checklist"></div>
+          </div>
+        </div>
+        <div class="grid">
+          <label>
+            Territory
+            <input id="territory" value="Worldwide" />
+          </label>
+          <label>
+            Term
+            <input id="term" value="Perpetual" placeholder="e.g. Perpetual, or 2 years" />
+          </label>
+          <label class="span-full">
+            Attribution
+            <input id="attribution" placeholder='e.g. Credit as "Artwork by Jane Doe" where practical' />
+          </label>
+          <label class="span-full">
+            Additional terms
+            <textarea id="additionalTerms" rows="3" placeholder="Anything else the holder should know"></textarea>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Signature</legend>
+        <p class="hint">Draw your signature below, or leave it blank and your typed name will be used.</p>
+        <canvas id="signature-pad" class="signature-pad"></canvas>
+        <div class="inline">
+          <button type="button" id="clear-signature" class="secondary">Clear signature</button>
+          <label class="grow">
+            Typed signature
+            <input id="typedSignature" placeholder="Defaults to your legal name" />
+          </label>
+        </div>
+      </fieldset>
+
+      <p id="form-error" class="error" role="alert" hidden></p>
+
+      <div class="actions">
+        <button type="button" id="preview-pdf" class="secondary">Preview PDF</button>
+        <button type="submit" id="download-pdf">Download PDF</button>
+      </div>
+      <p class="disclaimer">
+        This is a general template, not legal advice. For valuable or exclusive deals, have a lawyer review the terms.
+      </p>
+    </form>
+
+    <footer class="site-footer">
+      <img id="footer-logo" alt="" />
+      Brought to you by <strong>Clawmark Prints</strong>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

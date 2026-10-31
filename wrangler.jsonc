@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "clawmark-coa",
+  "account_id": "f72a4b6a1c6b54a2772f49c894604d5d",
+  "compatibility_date": "2026-10-30",
+  // Static site only: Cloudflare serves the Vite build output directly, no Worker script.
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}
