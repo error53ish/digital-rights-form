@@ -14,7 +14,7 @@ npm run build    # static site in dist/ (deploy to any static host)
 
 ## Deploying
 
-The live site is at https://clawmark-coa.error53ish-cloudflare.workers.dev. It's hosted as a static-assets Cloudflare Worker, configured in `wrangler.jsonc`. To publish changes:
+The live site is at <https://clawmark-coa.error53ish-cloudflare.workers.dev>. It's hosted as a static-assets Cloudflare Worker, configured in `wrangler.jsonc`. To publish changes:
 
 ```sh
 npx wrangler login   # first time only
